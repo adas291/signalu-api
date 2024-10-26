@@ -8,7 +8,7 @@ import (
 type Measurement struct {
 	Value    int     `json:"value"`
 	X        int     `json:"x"`
-	Y        int     `json:"x"`
+	Y        int     `json:"y"`
 	Distance float32 `json:"distance"`
 }
 

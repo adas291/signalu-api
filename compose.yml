@@ -3,5 +3,3 @@ services:
     container_name: signals-api
     build:
       context: .
-    ports:
-      - 3000:3000
