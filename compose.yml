@@ -1,5 +1,17 @@
 services:
   signals-api:
+    restart: unless-stopped
     container_name: signals-api
+    volumes:
+      - data.db:/app/data.db
     build:
       context: .
+
+
+    networks:
+     - homelab-network
+
+networks:
+  homelab-network:
+    name: homelab-network
+    external: true
