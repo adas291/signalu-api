@@ -3,7 +3,7 @@ services:
     restart: unless-stopped
     container_name: signals-api
     volumes:
-      - data.db:/app/data.db
+      - ./data.db:/app/data.db
     build:
       context: .
 

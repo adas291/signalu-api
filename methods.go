@@ -8,15 +8,20 @@ import (
 )
 
 type Measurement struct {
-	Value    int     `json:"value"`
-	X        int     `json:"x"`
-	Y        int     `json:"y"`
-	Distance float32 `json:"distance"`
+	Value     int     `json:"value"`
+	Strength1 int     `json:"strength1"`
+	Strength2 int     `json:"strength2"`
+	Strength3 int     `json:"strength3"`
+	X         int     `json:"x"`
+	Y         int     `json:"y"`
+	Distance  float32 `json:"distance"`
 }
 
 func GetMeasurements() ([]Measurement, error) {
 
 	// Execute the query
+	strengths, _ := GetStrengths()
+
 	rows, err := initializers.LOCAL_DB.Query("SELECT * FROM matavimai")
 	if err != nil {
 		log.Fatal(err)
@@ -27,21 +32,28 @@ func GetMeasurements() ([]Measurement, error) {
 
 	for rows.Next() {
 		// Define variables to store each column
-		var value int
+		var id int
 		var x, y int
 		var distance float32
 
 		// Scan the row into variables
-		if err := rows.Scan(&value, &x, &y, &distance); err != nil {
+		if err := rows.Scan(&id, &x, &y, &distance); err != nil {
 			log.Fatal(err)
 		}
 
+		measurementStrenths := filterBy(strengths, func(s Strength) bool {
+			return s.Measurement == id
+		})
+
 		// Print the values
 		measurements = append(measurements, Measurement{
-			Distance: distance,
-			X:        x,
-			Y:        y,
-			Value:    value,
+			Distance:  distance,
+			X:         x,
+			Y:         y,
+			Strength1: measurementStrenths[0].Strength,
+			Strength2: measurementStrenths[1].Strength,
+			Strength3: measurementStrenths[2].Strength,
+			Value:     id,
 		})
 	}
 
@@ -206,4 +218,16 @@ func getGridDimensions() (min_x, min_y, max_x, max_y int) {
 	}
 
 	return min_x, min_y, max_x, max_y
+}
+
+func filterBy[T any](slice []T, fn func(arg T) bool) []T {
+	result := make([]T, 0)
+
+	for _, v := range slice {
+		if fn(v) {
+			result = append(result, v)
+		}
+	}
+
+	return result
 }
